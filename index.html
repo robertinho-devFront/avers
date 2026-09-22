@@ -1,0 +1,979 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self' data:; connect-src 'none'; form-action 'none'; base-uri 'self'"><!--csp-->
+<meta name="description" content="Estimez gratuitement vos pièces : 2 € commémoratives, francs en argent, pièces en or. Déposez vos photos, obtenez une fourchette de prix. Vos photos ne quittent jamais votre appareil.">
+<meta property="og:title" content="Avers — combien vaut votre pièce ?">
+<meta property="og:description" content="Estimation gratuite de pièces de monnaie, sans inscription. Vos photos restent sur votre appareil.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<meta name="theme-color" content="#14233a">
+<title>Combien vaut ma pièce ?</title>
+<style>
+@font-face{font-family:"Atkinson Hyperlegible";font-weight:400;font-style:normal;font-display:swap;src:url("fonts/atkinson-hyperlegible-latin-400-normal.woff2") format("woff2")}
+@font-face{font-family:"Atkinson Hyperlegible";font-weight:700;font-style:normal;font-display:swap;src:url("fonts/atkinson-hyperlegible-latin-700-normal.woff2") format("woff2")}
+@font-face{font-family:"Libre Caslon Text";font-weight:400;font-style:normal;font-display:swap;src:url("fonts/libre-caslon-text-latin-400-normal.woff2") format("woff2")}
+@font-face{font-family:"Libre Caslon Text";font-weight:700;font-style:normal;font-display:swap;src:url("fonts/libre-caslon-text-latin-700-normal.woff2") format("woff2")}
+@font-face{font-family:"Cinzel";font-weight:600;font-style:normal;font-display:swap;src:url("fonts/cinzel-latin-600-normal.woff2") format("woff2")}
+
+:root{
+  --ground:#eef1f4; --surface:#ffffff; --surface-2:#f5f7f9; --ink:#14233a; --muted:#536074;
+  --line:#d5dbe3; --line-strong:#b9c2ce;
+  --brass:#86661c; --brass-fill:#c9a24a; --brass-soft:#f4ecd8;
+  --btn:#14233a; --on-btn:#ffffff; --btn-hover:#22375a;
+  --ok:#2c7350; --ok-soft:#e3f1e9; --warn:#9c530e; --warn-soft:#fbeedd; --bad:#a23a3a; --bad-soft:#f8e4e4;
+  --shadow:0 1px 2px rgba(20,35,58,.06),0 8px 28px rgba(20,35,58,.08);
+  --f-display:"Libre Caslon Text","Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --f-body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-legend:"Cinzel","Trajan Pro",Georgia,serif;
+  --r:10px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0d141e; --surface:#151f2c; --surface-2:#1a2635; --ink:#e8edf3; --muted:#9dabbd;
+    --line:#29374a; --line-strong:#3a4b62;
+    --brass:#dcba6a; --brass-fill:#c9a24a; --brass-soft:#2a2515;
+    --btn:#dcba6a; --on-btn:#141a22; --btn-hover:#e8c97e;
+    --ok:#74c89c; --ok-soft:#15291f; --warn:#e5a764; --warn-soft:#2d2114; --bad:#ec8c8c; --bad-soft:#2e1818;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0d141e; --surface:#151f2c; --surface-2:#1a2635; --ink:#e8edf3; --muted:#9dabbd;
+  --line:#29374a; --line-strong:#3a4b62;
+  --brass:#dcba6a; --brass-fill:#c9a24a; --brass-soft:#2a2515;
+  --btn:#dcba6a; --on-btn:#141a22; --btn-hover:#e8c97e;
+  --ok:#74c89c; --ok-soft:#15291f; --warn:#e5a764; --warn-soft:#2d2114; --bad:#ec8c8c; --bad-soft:#2e1818;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--ground);color:var(--ink);font:17px/1.6 var(--f-body);padding-inline:16px}
+img{max-width:100%}
+[hidden]{display:none!important}
+a{color:var(--brass);text-underline-offset:3px}
+h1,h2,h3{font-family:var(--f-display);font-weight:700;line-height:1.15;text-wrap:balance;margin:0}
+h2{font-size:clamp(1.6rem,3.2vw,2.1rem)}
+h3{font-size:1.2rem}
+p{margin:0}
+.wrap{max-width:1120px;margin-inline:auto}
+.legend{font-family:var(--f-legend);font-weight:600;letter-spacing:.14em;text-transform:uppercase;font-size:.78rem;color:var(--brass)}
+.muted{color:var(--muted)}
+.small{font-size:.9rem}
+:focus-visible{outline:3px solid var(--brass-fill);outline-offset:2px;border-radius:4px}
+
+/* Header */
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:18px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--ink)}
+.brand-name{font-family:var(--f-legend);font-weight:600;font-size:1.35rem;letter-spacing:.2em}
+.top nav{display:flex;gap:18px;flex-wrap:wrap}
+.top nav a{color:var(--muted);text-decoration:none;font-size:.95rem}
+.top nav a:hover{color:var(--ink)}
+@media (max-width:640px){.top nav{display:none}}
+
+/* Hero */
+.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:40px;align-items:center;padding-block:28px 40px}
+.hero h1{font-size:clamp(2.1rem,5vw,3.4rem);letter-spacing:-.01em}
+.hero h1 em{font-style:italic;color:var(--brass)}
+.hero .lead{font-size:1.15rem;color:var(--muted);max-width:34em;margin-top:18px}
+.promises{list-style:none;padding:0;margin:26px 0 0;display:grid;gap:12px}
+.promises li{display:flex;gap:12px;align-items:flex-start}
+.promises svg{flex:none;margin-top:3px;color:var(--ok)}
+.hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.coin-art{display:flex;justify-content:center}
+.coin-art svg{width:min(340px,80vw);height:auto}
+@media (max-width:860px){.hero{grid-template-columns:1fr}.coin-art{order:-1}.coin-art svg{width:min(220px,60vw)}}
+@media (prefers-reduced-motion:no-preference){.coin-ring{transform-origin:170px 170px;animation:turn 90s linear infinite}}
+@keyframes turn{to{transform:rotate(360deg)}}
+
+/* Buttons */
+.btn{appearance:none;border:1px solid transparent;border-radius:999px;padding:12px 22px;font:700 1rem/1.2 var(--f-body);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:background .15s,border-color .15s}
+.btn-primary{background:var(--btn);color:var(--on-btn)}
+.btn-primary:hover{background:var(--btn-hover)}
+.btn-ghost{background:transparent;color:var(--ink);border-color:var(--line-strong)}
+.btn-ghost:hover{border-color:var(--ink)}
+.btn-small{padding:8px 14px;font-size:.9rem}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.linklike{background:none;border:0;padding:0;font:inherit;color:var(--brass);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+
+/* Tool */
+.tool{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:24px;align-items:start;padding-block:12px 56px}
+@media (max-width:920px){.tool{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+.form{padding:26px;display:grid;gap:30px}
+.step{display:grid;gap:14px}
+.step-head{display:flex;gap:12px;align-items:baseline}
+.step-num{font-family:var(--f-legend);font-weight:600;color:var(--brass);font-size:1rem;letter-spacing:.1em;flex:none}
+.step-head h3{font-size:1.25rem}
+.field{display:grid;gap:6px}
+.field label,.label{font-weight:700;font-size:.95rem}
+.hint{font-size:.88rem;color:var(--muted)}
+input[type=text],input[type=number],select{width:100%;font:inherit;color:var(--ink);background:var(--surface-2);border:1px solid var(--line-strong);border-radius:var(--r);padding:11px 13px;min-height:48px}
+input:focus,select:focus{border-color:var(--brass-fill)}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;align-items:end}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:.95rem}
+.check input{width:20px;height:20px;margin-top:2px;accent-color:var(--brass-fill);flex:none}
+
+.slots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:520px){.slots{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.slot{position:relative;aspect-ratio:1;max-width:100%;border:2px dashed var(--line-strong);border-radius:14px;background:var(--surface-2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;cursor:pointer;overflow:hidden;padding:8px;transition:border-color .15s,background .15s}
+.slot:hover,.slot.drag{border-color:var(--brass-fill);background:var(--brass-soft)}
+.slot input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.slot .slot-title{font-weight:700;font-size:.95rem}
+.slot .slot-sub{font-size:.78rem;color:var(--muted)}
+.slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.slot .rm{position:absolute;top:6px;right:6px;z-index:2;background:rgba(13,20,30,.75);color:#fff;border:0;border-radius:999px;width:30px;height:30px;font-size:1rem;cursor:pointer}
+.slot.filled{border-style:solid;border-color:var(--line)}
+.qc{display:flex;flex-wrap:wrap;gap:6px}
+
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)}
+.chip.ok{background:var(--ok-soft);color:var(--ok);border-color:transparent}
+.chip.warn{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+.chip.bad{background:var(--bad-soft);color:var(--bad);border-color:transparent}
+.chip.brass{background:var(--brass-soft);color:var(--brass);border-color:transparent}
+
+.cats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.cat{position:relative}
+.cat:last-child{grid-column:1/-1}
+.cat input{position:absolute;opacity:0;pointer-events:none}
+.cat label{display:grid;gap:2px;height:100%;padding:12px 14px;border:1px solid var(--line-strong);border-radius:12px;cursor:pointer;background:var(--surface);font-weight:700;font-size:.95rem}
+.cat label span{font-weight:400;font-size:.8rem;color:var(--muted)}
+.cat input:checked+label{border-color:var(--brass-fill);background:var(--brass-soft);box-shadow:inset 0 0 0 1px var(--brass-fill)}
+.cat input:focus-visible+label{outline:3px solid var(--brass-fill);outline-offset:2px}
+
+.grades{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));border:1px solid var(--line-strong);border-radius:12px;overflow:hidden}
+@media (max-width:520px){.grades{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.grade{position:relative}
+.grade input{position:absolute;opacity:0;pointer-events:none}
+.grade label{display:grid;place-items:center;gap:0;padding:10px 4px;cursor:pointer;text-align:center;border-right:1px solid var(--line);min-height:56px}
+.grade:last-child label{border-right:0}
+.grade label b{font-family:var(--f-legend);font-weight:600;letter-spacing:.06em;font-size:.95rem}
+.grade label small{font-size:.7rem;color:var(--muted);line-height:1.2}
+.grade input:checked+label{background:var(--btn);color:var(--on-btn)}
+.grade input:checked+label small{color:inherit;opacity:.85}
+.grade input:focus-visible+label{outline:3px solid var(--brass-fill);outline-offset:-3px}
+.grade-desc{font-size:.9rem;color:var(--muted);min-height:1.5em}
+
+.suggest{display:grid;gap:8px}
+.suggest button{text-align:left;display:flex;justify-content:space-between;gap:10px;align-items:center;width:100%;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font:inherit;color:var(--ink);cursor:pointer}
+.suggest button:hover{border-color:var(--brass-fill)}
+.error{color:var(--bad);font-weight:700;font-size:.92rem}
+
+/* Result */
+.result{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);padding:26px;display:grid;gap:20px}
+@media (max-width:920px){.result{position:static}}
+.res-head{display:flex;gap:14px;align-items:center}
+.res-thumb{width:72px;height:72px;border-radius:50%;object-fit:cover;flex:none;border:2px solid var(--brass-fill);background:var(--surface-2)}
+.res-title{font-family:var(--f-display);font-size:1.4rem;line-height:1.2;overflow-wrap:anywhere}
+.figures{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.fig{background:var(--surface);padding:14px 16px;display:grid;gap:4px}
+.fig.main{grid-column:1/-1;background:var(--brass-soft)}
+.fig .k{font-size:.82rem;color:var(--muted);font-weight:700}
+.fig .v{font-family:var(--f-display);font-size:1.35rem;font-variant-numeric:tabular-nums;line-height:1.2}
+.fig.main .v{font-size:clamp(1.8rem,4vw,2.4rem);color:var(--ink)}
+.fig .s{font-size:.8rem;color:var(--muted)}
+.meter{display:grid;gap:6px}
+.meter-bar{height:10px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden}
+.meter-bar i{display:block;height:100%;border-radius:999px;background:var(--brass-fill);transition:width .5s}
+.meter-row{display:flex;justify-content:space-between;font-size:.9rem}
+.notes{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.notes li{display:flex;gap:10px;font-size:.93rem;line-height:1.5}
+.notes li::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;margin-top:.55em;background:var(--muted)}
+.notes li.w::before{background:var(--warn)}
+.notes li.b::before{background:var(--bad)}
+.notes li.o::before{background:var(--ok)}
+.res-actions{display:flex;flex-wrap:wrap;gap:10px}
+.disclaimer{font-size:.82rem;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+.badge-ex{font-family:var(--f-legend);font-size:.72rem;letter-spacing:.14em;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line-strong);color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 20px);transform:translateX(-50%);background:var(--btn);color:var(--on-btn);padding:12px 20px;border-radius:999px;font-weight:700;box-shadow:var(--shadow);z-index:50;max-width:calc(100% - 32px)}
+
+/* Sections */
+section.band{padding-block:56px;border-top:1px solid var(--line)}
+.sec-head{display:grid;gap:10px;max-width:44em;margin-bottom:28px}
+.sec-head p{color:var(--muted)}
+.scale{overflow-x:auto}
+.scale table{border-collapse:collapse;width:100%;min-width:560px;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.scale th,.scale td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top;font-size:.95rem}
+.scale th{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.scale td:first-child{font-family:var(--f-legend);font-weight:600;letter-spacing:.06em;white-space:nowrap}
+.scale tr:last-child td{border-bottom:0}
+.cols3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px}
+@media (max-width:820px){.cols3{grid-template-columns:1fr}}
+.col h3{margin-bottom:8px}
+.col p{color:var(--muted);font-size:.97rem}
+.formula{font-family:var(--f-display);font-size:1.15rem;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-top:22px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between}
+.rates{display:flex;gap:14px;flex-wrap:wrap;align-items:end}
+.rates .field{width:170px}
+.carnet-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.carnet-item{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;gap:12px;align-items:center}
+.carnet-item img{width:56px;height:56px;border-radius:50%;object-fit:cover;flex:none;background:var(--surface-2)}
+.carnet-item .t{font-weight:700;overflow-wrap:anywhere;line-height:1.3}
+.carnet-item .v{font-variant-numeric:tabular-nums;color:var(--brass);font-weight:700;font-size:.92rem}
+.carnet-item .d{font-size:.78rem;color:var(--muted)}
+.carnet-item button{margin-left:auto;flex:none}
+.empty{border:1px dashed var(--line-strong);border-radius:12px;padding:22px;color:var(--muted);text-align:center}
+.avis{display:grid;grid-template-columns:1.2fr .8fr;gap:28px;align-items:center;background:var(--btn);color:var(--on-btn);border-radius:18px;padding:34px}
+.avis .legend{color:inherit;opacity:.8}
+.avis p{opacity:.88;margin-top:10px}
+.avis ul{margin:14px 0 0;padding-left:1.1em;opacity:.9}
+.avis .btn{background:var(--on-btn);color:var(--btn)}
+.avis .btn:hover{opacity:.92}
+.avis .small{opacity:.75;margin-top:12px}
+@media (max-width:760px){.avis{grid-template-columns:1fr;padding:24px}}
+details.faq{border-bottom:1px solid var(--line);padding-block:14px}
+details.faq summary{cursor:pointer;font-weight:700;list-style:none;display:flex;justify-content:space-between;gap:12px}
+details.faq summary::after{content:"+";color:var(--brass);font-size:1.3rem;line-height:1}
+details.faq[open] summary::after{content:"–"}
+details.faq p{color:var(--muted);margin-top:10px;max-width:46em}
+footer{border-top:1px solid var(--line);padding-block:30px 40px;display:flex;flex-wrap:wrap;gap:16px 28px;justify-content:space-between;font-size:.9rem;color:var(--muted)}
+footer .links{display:flex;gap:18px;flex-wrap:wrap}
+
+dialog{border:1px solid var(--line);border-radius:16px;padding:0;max-width:min(680px,calc(100vw - 32px));width:100%;background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+dialog::backdrop{background:rgba(10,16,26,.55)}
+.dlg{padding:26px;display:grid;gap:14px;max-height:80vh;overflow:auto}
+.dlg h2{font-size:1.5rem}
+.dlg h3{font-size:1.05rem;margin-top:8px}
+.dlg p,.dlg li{font-size:.95rem;color:var(--muted)}
+.dlg ul{margin:0;padding-left:1.1em;display:grid;gap:4px}
+.dlg .close{justify-self:end}
+.todo{background:var(--warn-soft);color:var(--warn);padding:0 4px;border-radius:4px;font-weight:700}
+
+@media print{
+  body{background:#fff;color:#000;padding:0}
+  .top,.hero,.form,section.band,footer,.res-actions,.toast{display:none!important}
+  .tool{display:block;padding:0}
+  .result{box-shadow:none;border:0;position:static}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <a class="brand" href="#" aria-label="Avers, accueil">
+    <svg width="42" height="42" viewBox="0 0 42 42" aria-hidden="true">
+      <circle cx="21" cy="21" r="19.5" fill="none" stroke="var(--brass-fill)" stroke-width="1.5"/>
+      <circle cx="21" cy="21" r="16.5" fill="none" stroke="var(--brass-fill)" stroke-width="2" stroke-dasharray="0 3.2" stroke-linecap="round"/>
+      <text x="21" y="27.5" text-anchor="middle" font-family="Cinzel, Georgia, serif" font-weight="600" font-size="18" fill="var(--ink)">A</text>
+    </svg>
+    <span class="brand-name">AVERS</span>
+  </a>
+  <nav aria-label="Navigation principale">
+    <a href="#estimer">Estimer</a>
+    <a href="#etats">États</a>
+    <a href="#methode">Méthode</a>
+    <a href="#carnet">Mon carnet</a>
+    <a href="#avis">Votre avis</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div>
+    <p class="legend">Estimation gratuite · pièces de monnaie</p>
+    <h1 style="margin-top:12px">Combien vaut la pièce qui dort <em>dans votre tiroir&nbsp;?</em></h1>
+    <p class="lead">2&nbsp;€ commémoratives, anciens francs en argent, pièces en or&nbsp;: photographiez votre pièce, décrivez-la, et obtenez en deux minutes une fourchette de prix expliquée — ce qu’un professionnel pourrait vous en offrir et ce qu’elle vaut entre collectionneurs.</p>
+    <ul class="promises">
+      <li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Vos photos ne quittent pas votre appareil.</b> Tout est calculé dans votre navigateur&nbsp;: rien n’est envoyé, rien n’est stocké chez nous.</span></li>
+      <li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Gratuit, sans inscription, sans publicité.</b> Nous n’achetons ni ne vendons de pièces&nbsp;: aucun intérêt à sous-estimer la vôtre.</span></li>
+      <li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Des chiffres expliqués.</b> Cours de l’or et de l’argent, poids de métal fin, état de conservation&nbsp;: vous voyez d’où vient chaque euro.</span></li>
+    </ul>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="#estimer">Estimer ma pièce</a>
+      <a class="btn btn-ghost" href="#methode">Comment on calcule</a>
+    </div>
+  </div>
+  <div class="coin-art" aria-hidden="true">
+    <svg viewBox="0 0 340 340">
+      <defs>
+        <radialGradient id="gFace" cx="38%" cy="32%" r="75%">
+          <stop offset="0" stop-color="#f3dfa6"/><stop offset=".55" stop-color="#cfa74c"/><stop offset="1" stop-color="#8f6d24"/>
+        </radialGradient>
+        <radialGradient id="gInner" cx="40%" cy="35%" r="70%">
+          <stop offset="0" stop-color="#e9cf86"/><stop offset="1" stop-color="#b38a33"/>
+        </radialGradient>
+        <path id="ringPath" d="M170,170 m-118,0 a118,118 0 1,1 236,0 a118,118 0 1,1 -236,0"/>
+      </defs>
+      <circle cx="170" cy="170" r="160" fill="url(#gFace)"/>
+      <circle cx="170" cy="170" r="160" fill="none" stroke="#7d5e1e" stroke-width="2"/>
+      <circle cx="170" cy="170" r="148" fill="none" stroke="#7d5e1e" stroke-width="5" stroke-dasharray="0 9.3" stroke-linecap="round" opacity=".7"/>
+      <circle cx="170" cy="170" r="98" fill="url(#gInner)" stroke="#7d5e1e" stroke-width="1.5"/>
+      <g class="coin-ring">
+        <text font-family="Cinzel, Georgia, serif" font-weight="600" font-size="19" letter-spacing="5" fill="#5b4413">
+          <textPath href="#ringPath" startOffset="0">VOTRE PIÈCE · VOTRE PHOTO · VOTRE ESTIMATION · </textPath>
+        </text>
+      </g>
+      <text x="170" y="163" text-anchor="middle" font-family="Cinzel, Georgia, serif" font-weight="600" font-size="46" fill="#5b4413">AVERS</text>
+      <line x1="120" y1="180" x2="220" y2="180" stroke="#5b4413" stroke-width="1.5"/>
+      <text x="170" y="210" text-anchor="middle" font-family="Cinzel, Georgia, serif" font-weight="600" font-size="17" letter-spacing="3" fill="#5b4413">MMXXVI</text>
+    </svg>
+  </div>
+</section>
+
+<main id="estimer" class="tool">
+  <form class="panel form" id="form" novalidate>
+    <div class="step">
+      <div class="step-head"><span class="step-num">I</span><h3>Photographiez votre pièce</h3></div>
+      <p class="hint">Posez la pièce sur un fond uni et mat, à la lumière du jour, sans flash. Remplissez le cadre. Photos traitées sur votre appareil uniquement.</p>
+      <div class="slots">
+        <div class="slot" data-slot="avers" id="slot-avers">
+          <input type="file" accept="image/*" id="file-avers" aria-label="Photo de l’avers (face)">
+          <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="12" fill="none" stroke="var(--brass-fill)" stroke-width="2"/><path d="M15 10v10M10 15h10" stroke="var(--brass-fill)" stroke-width="2" stroke-linecap="round"/></svg>
+          <span class="slot-title">Avers</span><span class="slot-sub">côté face, portrait</span>
+        </div>
+        <div class="slot" data-slot="revers" id="slot-revers">
+          <input type="file" accept="image/*" id="file-revers" aria-label="Photo du revers (pile)">
+          <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="12" fill="none" stroke="var(--brass-fill)" stroke-width="2"/><path d="M15 10v10M10 15h10" stroke="var(--brass-fill)" stroke-width="2" stroke-linecap="round"/></svg>
+          <span class="slot-title">Revers</span><span class="slot-sub">côté pile, valeur</span>
+        </div>
+        <div class="slot" data-slot="tranche" id="slot-tranche">
+          <input type="file" accept="image/*" id="file-tranche" aria-label="Photo de la tranche (facultatif)">
+          <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><rect x="4" y="11" width="22" height="8" rx="4" fill="none" stroke="var(--brass-fill)" stroke-width="2"/></svg>
+          <span class="slot-title">Tranche</span><span class="slot-sub">facultatif</span>
+        </div>
+      </div>
+      <div class="qc" id="qc" aria-live="polite"></div>
+      <div class="field">
+        <label for="titre">Donnez un nom à votre pièce</label>
+        <input type="text" id="titre" maxlength="80" placeholder="ex. « La 2 € de Monaco de mamie »" autocomplete="off">
+        <span class="hint">Pour la retrouver dans votre carnet. Évitez d’y mettre votre nom ou votre adresse.</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><span class="step-num">II</span><h3>Identifiez-la</h3></div>
+      <div class="cats" role="radiogroup" aria-label="Type de pièce" id="cats"></div>
+      <div class="field" id="field-model">
+        <label for="modele">Modèle</label>
+        <select id="modele"></select>
+        <span class="hint" id="model-hint"></span>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="annee">Année (millésime)</label>
+          <input type="number" id="annee" inputmode="numeric" min="1700" max="2026" placeholder="ex. 1964">
+        </div>
+        <div class="field">
+          <label for="poids">Poids mesuré <span class="muted">(g, facultatif)</span></label>
+          <input type="number" id="poids" inputmode="decimal" step="0.01" min="0" placeholder="ex. 25,02">
+        </div>
+        <div class="field">
+          <label for="diametre">Diamètre <span class="muted">(mm, facultatif)</span></label>
+          <input type="number" id="diametre" inputmode="decimal" step="0.1" min="0" placeholder="ex. 37">
+        </div>
+      </div>
+      <div class="row" id="libre-fields" hidden>
+        <div class="field">
+          <label for="libre-metal">Métal</label>
+          <select id="libre-metal"><option value="or">Or</option><option value="argent">Argent</option></select>
+        </div>
+        <div class="field">
+          <label for="libre-titre">Titre (pureté)</label>
+          <select id="libre-titre">
+            <option value="0.999">999 ‰ (pur)</option><option value="0.9167">916,7 ‰ (22 carats)</option>
+            <option value="0.925">925 ‰ (argent sterling)</option><option value="0.9" selected>900 ‰</option>
+            <option value="0.835">835 ‰</option><option value="0.8">800 ‰</option><option value="0.75">750 ‰ (18 carats)</option>
+            <option value="0.68">680 ‰</option><option value="0.5">500 ‰</option>
+          </select>
+        </div>
+      </div>
+      <div class="suggest" id="suggest" hidden></div>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><span class="step-num">III</span><h3>Son état de conservation</h3></div>
+      <div class="grades" role="radiogroup" aria-label="État de conservation" id="grades"></div>
+      <p class="grade-desc" id="grade-desc"></p>
+      <label class="check"><input type="checkbox" id="coffret"> Elle est encore dans son coffret, sa capsule ou sa carte d’origine (BU, BE), avec certificat le cas échéant.</label>
+      <label class="check"><input type="checkbox" id="nettoyee"> Elle a été nettoyée, frottée ou vernie.</label>
+    </div>
+
+    <div class="step">
+      <p class="error" id="form-error" hidden></p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <button type="submit" class="btn btn-primary">Estimer ma pièce</button>
+        <button type="button" class="btn btn-ghost" id="reset">Recommencer</button>
+      </div>
+    </div>
+  </form>
+
+  <aside class="panel result" id="result" aria-live="polite"></aside>
+</main>
+
+</div>
+
+<section class="band" id="etats">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="legend">L’échelle française des états</p>
+      <h2>L’état fait souvent plus que l’année</h2>
+      <p>Les numismates notent l’usure d’une pièce sur une échelle de six crans. Regardez les reliefs les plus hauts (cheveux, joues, plis) sous une lumière rasante.</p>
+    </div>
+    <div class="scale">
+      <table>
+        <thead><tr><th>État</th><th>Ce qu’on voit</th><th>Effet sur le prix</th></tr></thead>
+        <tbody id="scale-body"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="methode">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="legend">Transparence</p>
+      <h2>Comment Avers calcule votre estimation</h2>
+      <p>Pas de boîte noire&nbsp;: trois familles de pièces, trois raisonnements.</p>
+    </div>
+    <div class="cols3">
+      <div class="col"><h3>Or et argent</h3><p>On part du poids de métal fin (poids × titre), multiplié par le cours du jour. Un comptoir rachète en général un peu en dessous de cette valeur&nbsp;; un collectionneur peut payer au-dessus si l’état est beau ou l’année rare.</p></div>
+      <div class="col"><h3>2&nbsp;€ commémoratives</h3><p>Seules quelques pièces à très faible tirage (Monaco, Vatican, Saint-Marin) valent cher. On s’appuie sur des fourchettes de ventes constatées en 2026, puis on ajuste selon l’état et la présence du coffret.</p></div>
+      <div class="col"><h3>Pièces courantes</h3><p>Euros de circulation, francs en nickel, bronze ou aluminium&nbsp;: la grande majorité vaut sa valeur faciale ou quelques centimes. Seules certaines années rares ou de vraies erreurs de frappe font exception.</p></div>
+    </div>
+    <div class="formula">
+      <span>valeur métal = poids × titre × cours du gramme</span>
+      <span class="muted small" id="rates-label"></span>
+    </div>
+    <div class="rates" style="margin-top:16px">
+      <div class="field"><label for="cours-or">Or (€/g fin)</label><input type="number" id="cours-or" step="0.01" min="0"></div>
+      <div class="field"><label for="cours-ag">Argent (€/g fin)</label><input type="number" id="cours-ag" step="0.001" min="0"></div>
+      <p class="hint" style="max-width:28em">Les cours changent chaque jour. Vous pouvez les corriger ici (cours de l’once ÷ 31,1035 = cours du gramme)&nbsp;; l’estimation se met à jour.</p>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="carnet">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="legend">Mon carnet</p>
+      <h2>Vos pièces estimées</h2>
+      <p>Enregistré uniquement dans ce navigateur, sur cet appareil. Personne d’autre n’y a accès.</p>
+    </div>
+    <div class="carnet-list" id="carnet-list"></div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:16px;align-items:center">
+      <span class="muted small" id="carnet-total"></span>
+      <button type="button" class="btn btn-ghost btn-small" id="carnet-clear">Tout effacer</button>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="pieges">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="legend">Avant de vendre</p>
+      <h2>Les pièges à éviter</h2>
+    </div>
+    <div class="cols3">
+      <div class="col"><h3>Les annonces à 10&nbsp;000&nbsp;€</h3><p>Des 2&nbsp;€ courantes sont affichées à des prix délirants sur les sites d’annonces. Un prix demandé n’est pas un prix payé&nbsp;: fiez-vous aux ventes réellement conclues.</p></div>
+      <div class="col"><h3>Ne nettoyez jamais une pièce</h3><p>Frotter, tremper ou polir enlève la patine et fait perdre jusqu’à la moitié de la valeur de collection. Manipulez-la par la tranche.</p></div>
+      <div class="col"><h3>Faites jouer la concurrence</h3><p>Pour une pièce qui dépasse 100&nbsp;€, demandez au moins deux avis de numismates professionnels (membres d’un syndicat professionnel), et un reçu détaillé.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="avis">
+  <div class="wrap">
+    <div class="avis">
+      <div>
+        <p class="legend">Avers se construit avec vous</p>
+        <h2 style="margin-top:8px">Qu’est-ce qui vous manque&nbsp;?</h2>
+        <p>Un pays, une catégorie de pièces, une expertise par un humain, une application mobile&nbsp;? Dites-le-nous en deux minutes&nbsp;: les prochaines fonctionnalités viennent de vos réponses.</p>
+        <ul>
+          <li>7 questions, aucune obligatoire</li>
+          <li>Aucune donnée personnelle demandée</li>
+        </ul>
+      </div>
+      <div style="display:grid;gap:10px;justify-items:start">
+        <a class="btn" id="avis-btn" href="#" target="_blank" rel="noopener noreferrer">Donner mon avis</a>
+        <p class="small" id="avis-note">Le questionnaire est hébergé par Google Forms, qui applique ses propres règles de confidentialité.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="faq">
+  <div class="wrap">
+    <div class="sec-head"><p class="legend">Questions fréquentes</p><h2>Vous vous demandez peut-être</h2></div>
+    <details class="faq"><summary>Est-ce qu’Avers reconnaît ma pièce automatiquement sur la photo&nbsp;?</summary><p>Pas encore. La photo sert à vérifier sa qualité (netteté, lumière, résolution), à repérer la teinte du métal et à illustrer votre carnet. L’identification se fait avec vous, en quelques clics. Si vous ne connaissez pas la pièce, indiquez son poids et son diamètre&nbsp;: Avers vous propose les modèles qui correspondent.</p></details>
+    <details class="faq"><summary>Pourquoi deux prix différents&nbsp;?</summary><p>Le prix de rachat est ce qu’un comptoir ou un marchand vous offrira probablement&nbsp;: il doit revendre avec une marge. La valeur de collection est le prix auquel la pièce se vend entre particuliers ou collectionneurs, qui demande plus de temps et d’efforts pour vendre.</p></details>
+    <details class="faq"><summary>Mes photos sont-elles envoyées quelque part&nbsp;?</summary><p>Non. Elles sont lues et analysées par votre navigateur, sans jamais être transmises. La page interdit d’ailleurs techniquement tout envoi de données (règle de sécurité «&nbsp;connect-src none&nbsp;»). Les métadonnées de localisation des photos ne sont pas conservées&nbsp;: les miniatures du carnet sont redessinées sans elles.</p></details>
+    <details class="faq"><summary>Puis-je me fier à 100&nbsp;% à l’estimation&nbsp;?</summary><p>Non&nbsp;: c’est un ordre de grandeur, pas une expertise. Seul un professionnel qui tient la pièce en main peut garantir son authenticité et son état. Avers vous aide à savoir si cela vaut la peine de le consulter, et à ne pas vendre à perte.</p></details>
+  </div>
+</section>
+
+<div class="wrap">
+<footer>
+  <span>© 2026 Avers — estimation indicative, sans valeur d’expertise.</span>
+  <div class="links">
+    <button type="button" class="linklike" data-open="dlg-mentions">Mentions légales</button>
+    <button type="button" class="linklike" data-open="dlg-confid">Confidentialité</button>
+    <button type="button" class="linklike" id="share">Partager Avers</button>
+  </div>
+</footer>
+</div>
+
+<dialog id="dlg-mentions" aria-labelledby="t-mentions">
+  <div class="dlg">
+    <h2 id="t-mentions">Mentions légales</h2>
+    <h3>Éditeur</h3>
+    <p id="m-editeur"></p>
+    <h3>Hébergement</h3>
+    <p>GitHub Pages — GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis.</p>
+    <h3>Nature du service</h3>
+    <p>Avers fournit des estimations indicatives de pièces de monnaie, calculées automatiquement à partir des informations que vous saisissez. Elles ne constituent ni une expertise, ni une offre d’achat, ni un conseil en investissement. Avers n’achète ni ne vend de pièces.</p>
+    <h3>Propriété intellectuelle</h3>
+    <p>Code source publié sous licence MIT. Polices Atkinson Hyperlegible, Libre Caslon Text et Cinzel sous licence SIL Open Font License, hébergées avec le site.</p>
+    <button type="button" class="btn btn-ghost btn-small close" data-close>Fermer</button>
+  </div>
+</dialog>
+
+<dialog id="dlg-confid" aria-labelledby="t-confid">
+  <div class="dlg">
+    <h2 id="t-confid">Politique de confidentialité</h2>
+    <p>En bref&nbsp;: Avers ne collecte aucune donnée personnelle. Pas de compte, pas de cookie, pas de mesure d’audience, pas de publicité.</p>
+    <h3>Vos photos et vos saisies</h3>
+    <p>Elles sont traitées exclusivement dans votre navigateur et ne sont jamais transmises à Avers ni à un tiers. Elles disparaissent quand vous fermez la page.</p>
+    <h3>Votre carnet</h3>
+    <p>Si vous cliquez sur «&nbsp;Enregistrer dans mon carnet&nbsp;», le titre, l’estimation et une petite miniature sont conservés dans le stockage local de votre navigateur (localStorage), sur votre seul appareil. Ce stockage est strictement nécessaire à la fonction que vous demandez&nbsp;: il ne requiert pas de consentement préalable (article 82 de la loi Informatique et Libertés). Vous pouvez tout supprimer à tout moment avec le bouton «&nbsp;Tout effacer&nbsp;» ou en vidant les données du site dans votre navigateur.</p>
+    <h3>Hébergement</h3>
+    <p>Comme tout hébergeur, GitHub peut enregistrer des journaux techniques (adresse IP, date, page demandée) pour la sécurité du service. Voir la déclaration de confidentialité de GitHub.</p>
+    <h3>Questionnaire d’avis (Google Forms)</h3>
+    <ul>
+      <li><b>Responsable du traitement&nbsp;:</b> <span id="m-resp"></span></li>
+      <li><b>Finalité&nbsp;:</b> améliorer Avers à partir de vos besoins.</li>
+      <li><b>Base légale&nbsp;:</b> votre consentement (répondre est facultatif).</li>
+      <li><b>Données&nbsp;:</b> vos réponses&nbsp;; votre e-mail seulement si vous choisissez de le laisser pour être recontacté.</li>
+      <li><b>Destinataires&nbsp;:</b> l’éditeur d’Avers&nbsp;; Google en tant que sous-traitant (transfert encadré par le cadre UE–États-Unis de protection des données).</li>
+      <li><b>Durée&nbsp;:</b> 12 mois au maximum, puis suppression.</li>
+    </ul>
+    <h3>Vos droits</h3>
+    <p>Vous disposez d’un droit d’accès, de rectification, d’effacement, d’opposition et de retrait de votre consentement. Écrivez à <span id="m-contact"></span>. Vous pouvez aussi saisir la CNIL (cnil.fr).</p>
+    <button type="button" class="btn btn-ghost btn-small close" data-close>Fermer</button>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+/* ============ CONFIGURATION — à compléter avant la mise en ligne ============ */
+const CONFIG = {
+  editeur: "",        // ex. "Robert Da Silva, particulier" — obligatoire (LCEN)
+  contact: "",        // ex. "avers.contact@exemple.fr" — adresse pour exercer vos droits RGPD
+  avisUrl: "",        // lien du Google Form (voir google-form/creer-formulaire.gs)
+  cours: { or: 121.87, argent: 1.848, date: "21/09/2026" } // €/gramme de métal fin
+};
+/* =========================================================================== */
+
+const $ = s => document.querySelector(s);
+const eur = n => n >= 100 ? Math.round(n).toLocaleString("fr-FR") + " €" : n.toLocaleString("fr-FR",{minimumFractionDigits:n<10?2:0,maximumFractionDigits:n<10?2:0}) + " €";
+const range = r => r ? (Math.abs(r[1]-r[0]) < 0.005 ? eur(r[0]) : eur(r[0]) + " – " + eur(r[1])) : "—";
+const todo = t => `<span class="todo">${t}</span>`;
+
+const COURS = { or: CONFIG.cours.or, argent: CONFIG.cours.argent };
+
+/* ---------- Référentiel ---------- */
+const CATS = [
+  {id:"euro2",  t:"2 € commémorative", s:"dessin spécial sur la face"},
+  {id:"argent", t:"Franc en argent",    s:"Semeuse, Hercule, Turin…"},
+  {id:"or",     t:"Pièce en or",        s:"Napoléon, Souverain…"},
+  {id:"euro",   t:"Euro courant",       s:"1 centime à 2 €"},
+  {id:"franc",  t:"Franc ordinaire",    s:"nickel, bronze, alu"},
+  {id:"libre",  t:"Autre or / argent",  s:"je connais le poids"},
+  {id:"inconnu",t:"Je ne sais pas",     s:"aidez-moi à trouver"}
+];
+const M = (id,cat,label,poids,titre,diam,extra={}) => ({id,cat,label,poids,titre,diam,metal:cat==="or"?"or":"argent",...extra});
+const MODELS = [
+  M("or-20f","or","20 F or — Napoléon, Marianne Coq, Génie",6.45,.9,21),
+  M("or-10f","or","10 F or — Napoléon, Marianne Coq",3.2258,.9,19),
+  M("or-50f","or","50 F or — Napoléon III",16.129,.9,28),
+  M("or-100f","or","100 F or — Napoléon III, Génie",32.258,.9,35),
+  M("or-vreneli","or","20 francs suisses « Vreneli »",6.45,.9,21),
+  M("or-souverain","or","Souverain britannique",7.988,.9167,22.05),
+  M("or-50pesos","or","50 pesos mexicain",41.667,.9,37),
+  M("or-kruger","or","Krugerrand 1 once",33.93,.9167,32.77),
+  M("ag-5f-ecu","argent","5 F écu — Louis-Philippe, Napoléon III, Hercule (1830–1889)",25,.9,37),
+  M("ag-50c","argent","50 centimes Semeuse argent (1897–1920)",2.5,.835,18),
+  M("ag-1f","argent","1 F Semeuse argent (1898–1920)",5,.835,23),
+  M("ag-2f","argent","2 F Semeuse argent (1898–1920)",10,.835,27),
+  M("ag-10f-turin","argent","10 F Turin (1929–1939)",10,.68,28),
+  M("ag-20f-turin","argent","20 F Turin (1929–1939)",20,.68,35),
+  M("ag-5f-semeuse","argent","5 F Semeuse argent (1959–1969)",12,.835,29),
+  M("ag-10f-hercule","argent","10 F Hercule (1965–1973)",25,.9,37),
+  M("ag-50f-hercule","argent","50 F Hercule (1974–1980)",30,.9,41,{rare:{1980:"le millésime 1980 est souvent cité comme le plus rare de la série"}}),
+  M("ag-100f","argent","100 F commémorative argent (1982–2001)",15,.9,31)
+];
+// 2 € : fourchettes indicatives de ventes constatées (2026). circ = circulée, neuf = BU/BE en coffret.
+const E2 = [
+  {id:"e2-grace",   label:"Monaco 2007 — Grace Kelly",               tirage:20001,  circ:[600,1500], neuf:[1500,3300]},
+  {id:"e2-fort",    label:"Monaco 2015 — Fondation de la forteresse", tirage:10000,  circ:[500,1200], neuf:[1800,2800]},
+  {id:"e2-sm04",    label:"Saint-Marin 2004 — Bartolomeo Borghesi",  tirage:110000, circ:[40,80],    neuf:[80,150]},
+  {id:"e2-vat04",   label:"Vatican 2004 — 75 ans de l’État du Vatican", tirage:100000, circ:[30,60], neuf:[60,120]},
+  {id:"e2-sm05",    label:"Saint-Marin 2005 — Galilée",              tirage:130000, circ:[25,50],    neuf:[50,90]},
+  {id:"e2-vat05",   label:"Vatican 2005 — JMJ de Cologne",           tirage:100000, circ:[20,40],    neuf:[40,80]},
+  {id:"e2-mon11",   label:"Monaco 2011 — Mariage princier",          tirage:147877, circ:[10,25],    neuf:[25,60]},
+  {id:"e2-mon12",   label:"Monaco 2012 — Lucien Ier",                tirage:110000, circ:[12,30],    neuf:[30,60]},
+  {id:"e2-fin04",   label:"Finlande 2004 — Élargissement de l’UE",   tirage:1000000,circ:[3,8],      neuf:[8,20]},
+  {id:"e2-autre",   label:"Autre commémorative (France, Allemagne, Italie…)", tirage:null, circ:[2,2.5], neuf:[3,8]}
+];
+const GRADES = [
+  {k:"B",   n:"Beau",            d:"Très usée : les reliefs sont presque effacés, la date reste lisible.", eff:"Valeur métal ou faciale seulement"},
+  {k:"TB",  n:"Très Beau",       d:"Usure nette sur tous les reliefs, les détails principaux sont visibles.", eff:"Faible prime"},
+  {k:"TTB", n:"Très Très Beau",  d:"Usure légère sur les points hauts, la plupart des détails sont nets.", eff:"L’état le plus courant pour une pièce qui a circulé"},
+  {k:"SUP", n:"Superbe",         d:"Très légère usure, visible seulement à la loupe ; brillant d’origine en partie présent.", eff:"Prime appréciable"},
+  {k:"SPL", n:"Splendide",       d:"Aucune usure, seulement de petits chocs de manipulation.", eff:"Forte prime pour les collectionneurs"},
+  {k:"FDC", n:"Fleur de coin",   d:"Parfaite, comme sortie de l’atelier de frappe, jamais manipulée.", eff:"Prix maximum, surtout en coffret"}
+];
+
+/* ---------- État ---------- */
+const state = { cat:"argent", model:null, grade:2, photos:{}, analysis:{}, example:true, last:null };
+
+/* ---------- Construction de l’interface ---------- */
+$("#cats").innerHTML = CATS.map(c=>`<div class="cat"><input type="radio" name="cat" id="cat-${c.id}" value="${c.id}"><label for="cat-${c.id}">${c.t}<span>${c.s}</span></label></div>`).join("");
+$("#grades").innerHTML = GRADES.map((g,i)=>`<div class="grade"><input type="radio" name="grade" id="g-${g.k}" value="${i}"><label for="g-${g.k}" title="${g.n}"><b>${g.k}</b><small>${g.n}</small></label></div>`).join("");
+$("#scale-body").innerHTML = GRADES.map(g=>`<tr><td>${g.k}</td><td><b>${g.n}.</b> ${g.d}</td><td>${g.eff}</td></tr>`).join("");
+
+function modelsFor(cat){
+  if(cat==="euro2") return E2;
+  return MODELS.filter(m=>m.cat===cat);
+}
+function renderModelSelect(){
+  const cat = state.cat, sel = $("#modele"), list = modelsFor(cat);
+  const show = list.length>0;
+  $("#field-model").hidden = !show;
+  $("#libre-fields").hidden = !(cat==="libre"||cat==="inconnu");
+  if(show){
+    sel.innerHTML = `<option value="">— Choisissez —</option>` + list.map(m=>`<option value="${m.id}">${m.label}</option>`).join("");
+    if(state.model && list.some(m=>m.id===state.model)) sel.value = state.model; else state.model = null;
+  }
+  const hints = {
+    euro2:"La face commune (carte de l’Europe) est la même partout : c’est l’autre face qui compte.",
+    argent:"Les francs en argent sonnent clair et ne sont pas attirés par un aimant.",
+    or:"Pesez-la au centigramme près si possible : le poids trahit la plupart des copies.",
+  };
+  $("#model-hint").textContent = hints[cat]||"";
+  const needW = cat==="libre"||cat==="inconnu";
+  $("#poids").placeholder = needW ? "obligatoire ici" : "ex. 25,02";
+  updateSuggest();
+}
+function setCat(c){ state.cat=c; const r=$("#cat-"+c); if(r) r.checked=true; renderModelSelect(); }
+function setGrade(i){ state.grade=i; $("#g-"+GRADES[i].k).checked=true; $("#grade-desc").textContent = GRADES[i].n + " — " + GRADES[i].d; }
+
+document.querySelectorAll('input[name=cat]').forEach(r=>r.addEventListener("change",e=>{setCat(e.target.value)}));
+document.querySelectorAll('input[name=grade]').forEach(r=>r.addEventListener("change",e=>setGrade(+e.target.value)));
+$("#modele").addEventListener("change",e=>{state.model=e.target.value||null});
+["#poids","#diametre"].forEach(s=>$(s).addEventListener("input",updateSuggest));
+
+/* ---------- Aide à l’identification par poids / diamètre ---------- */
+function updateSuggest(){
+  const box=$("#suggest");
+  if(state.cat!=="inconnu"){box.hidden=true;return;}
+  const w=parseFloat($("#poids").value), d=parseFloat($("#diametre").value);
+  if(!(w>0)&&!(d>0)){box.hidden=false;box.innerHTML=`<p class="hint">Indiquez le poids (balance de cuisine précise) et/ou le diamètre : nous chercherons les pièces qui correspondent.</p>`;return;}
+  const scored = MODELS.map(m=>{
+    let s=0,n=0;
+    if(w>0){s+=Math.abs(w-m.poids)/m.poids;n++}
+    if(d>0){s+=Math.abs(d-m.diam)/m.diam;n++}
+    return {m,s:s/n};
+  }).filter(x=>x.s<0.06).sort((a,b)=>a.s-b.s).slice(0,4);
+  box.hidden=false;
+  if(!scored.length){box.innerHTML=`<p class="hint">Aucune pièce en or ou en argent de notre liste ne correspond. Il s’agit peut-être d’une pièce courante ou étrangère : choisissez « Franc ordinaire » ou « Euro courant », ou attendez la prochaine version d’Avers.</p>`;return;}
+  box.innerHTML = `<span class="label">Pièces qui correspondent</span>` + scored.map(x=>`<button type="button" data-pick="${x.m.id}"><span>${x.m.label}</span><span class="chip ${x.s<.02?"ok":"brass"}">${x.m.poids.toLocaleString("fr-FR")} g · ${x.m.diam} mm</span></button>`).join("");
+  box.querySelectorAll("[data-pick]").forEach(b=>b.addEventListener("click",()=>{
+    const m=MODELS.find(x=>x.id===b.dataset.pick); state.model=m.id; setCat(m.cat); $("#modele").value=m.id; toast("Modèle sélectionné : "+m.label);
+  }));
+}
+
+/* ---------- Photos : chargement, contrôle qualité, miniature sans métadonnées ---------- */
+function loadImage(file){
+  return new Promise((res,rej)=>{const u=URL.createObjectURL(file);const i=new Image();i.onload=()=>{res(i)};i.onerror=()=>{URL.revokeObjectURL(u);rej()};i.src=u;});
+}
+function analyse(img){
+  const W=img.naturalWidth,H=img.naturalHeight, sc=Math.min(1,320/Math.max(W,H));
+  const w=Math.max(1,Math.round(W*sc)),h=Math.max(1,Math.round(H*sc));
+  const c=document.createElement("canvas");c.width=w;c.height=h;const x=c.getContext("2d",{willReadFrequently:true});x.drawImage(img,0,0,w,h);
+  const d=x.getImageData(0,0,w,h).data, g=new Float32Array(w*h);
+  let sum=0, warm=0, grey=0, counted=0;
+  for(let i=0,p=0;i<d.length;i+=4,p++){
+    const r=d[i],gg=d[i+1],b=d[i+2]; const l=.299*r+.587*gg+.114*b; g[p]=l; sum+=l;
+    const px=p%w, py=(p/w)|0;
+    if(px>w*.25&&px<w*.75&&py>h*.25&&py<h*.75&&l>35&&l<235){
+      const mx=Math.max(r,gg,b),mn=Math.min(r,gg,b),sat=mx?(mx-mn)/mx:0; counted++;
+      let hue=0; if(mx!==mn){ if(mx===r) hue=60*(((gg-b)/(mx-mn))%6); else if(mx===gg) hue=60*((b-r)/(mx-mn)+2); else hue=60*((r-gg)/(mx-mn)+4);} if(hue<0)hue+=360;
+      if(sat>.22&&hue>=18&&hue<=62) warm++; else if(sat<.13) grey++;
+    }
+  }
+  const mean=sum/(w*h);
+  let lap=0,lm=0,n=0; const L=[];
+  for(let y=1;y<h-1;y++)for(let xx=1;xx<w-1;xx++){const p=y*w+xx;const v=4*g[p]-g[p-1]-g[p+1]-g[p-w]-g[p+w];L.push(v);lm+=v;n++;}
+  lm/=n||1; for(const v of L) lap+=(v-lm)*(v-lm); lap/=n||1;
+  const tint = counted? (warm/counted>.35?"dorée / cuivrée":(grey/counted>.55?"argentée / grise":"mixte")) : "indéterminée";
+  return {res:Math.min(W,H), mean, sharp:lap, tint};
+}
+function thumb(img,size){
+  const c=document.createElement("canvas"), s=Math.min(img.naturalWidth,img.naturalHeight);
+  c.width=c.height=size; const x=c.getContext("2d");
+  x.drawImage(img,(img.naturalWidth-s)/2,(img.naturalHeight-s)/2,s,s,0,0,size,size);
+  return c.toDataURL("image/jpeg",.82);
+}
+async function handleFile(slot,file){
+  if(!file) return;
+  if(!/^image\//.test(file.type)){toast("Ce fichier n’est pas une image. Choisissez une photo (JPG, PNG, HEIC…).");return;}
+  try{
+    const img=await loadImage(file);
+    const a=analyse(img);
+    state.photos[slot]={big:thumb(img,420),small:thumb(img,120)};
+    state.analysis[slot]=a;
+    URL.revokeObjectURL(img.src);
+    renderSlot(slot); renderQC();
+  }catch(e){toast("Impossible de lire cette photo. Essayez un autre format (JPG ou PNG).");}
+}
+function renderSlot(slot){
+  const el=$("#slot-"+slot), p=state.photos[slot];
+  el.querySelectorAll("img,.rm").forEach(n=>n.remove());
+  el.classList.toggle("filled",!!p);
+  if(p){
+    const i=document.createElement("img");i.src=p.big;i.alt="Photo : "+slot;el.appendChild(i);
+    const b=document.createElement("button");b.type="button";b.className="rm";b.setAttribute("aria-label","Retirer la photo "+slot);b.textContent="×";
+    b.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();delete state.photos[slot];delete state.analysis[slot];$("#file-"+slot).value="";renderSlot(slot);renderQC();});
+    el.appendChild(b);
+  }
+}
+function photoScore(){
+  const keys=Object.keys(state.analysis); if(!keys.length) return {score:0,chips:[]};
+  let s=0; const chips=[];
+  for(const k of keys){
+    const a=state.analysis[k], lab=k[0].toUpperCase()+k.slice(1);
+    const sharpOK=a.sharp>120, sharpMid=a.sharp>45, lightOK=a.mean>55&&a.mean<205, resOK=a.res>=800;
+    s += (sharpOK?1:sharpMid?.5:0)+(lightOK?1:0)+(resOK?1:.5);
+    chips.push(`<span class="chip ${sharpOK?"ok":sharpMid?"warn":"bad"}">${lab} : ${sharpOK?"nette":sharpMid?"un peu floue":"floue"}</span>`);
+    if(!lightOK) chips.push(`<span class="chip warn">${lab} : ${a.mean<=55?"trop sombre":"surexposée"}</span>`);
+    if(!resOK) chips.push(`<span class="chip warn">${lab} : petite résolution</span>`);
+    if(k!=="tranche") chips.push(`<span class="chip brass">${lab} : teinte ${a.tint}</span>`);
+  }
+  const both = state.analysis.avers&&state.analysis.revers ? 1 : .6;
+  return {score:Math.min(1,s/(keys.length*3))*both, chips};
+}
+function renderQC(){ $("#qc").innerHTML = photoScore().chips.join(""); }
+
+["avers","revers","tranche"].forEach(slot=>{
+  const el=$("#slot-"+slot), inp=$("#file-"+slot);
+  inp.addEventListener("change",()=>handleFile(slot,inp.files[0]));
+  el.addEventListener("dragover",e=>{e.preventDefault();el.classList.add("drag")});
+  el.addEventListener("dragleave",()=>el.classList.remove("drag"));
+  el.addEventListener("drop",e=>{e.preventDefault();el.classList.remove("drag");handleFile(slot,e.dataTransfer.files[0])});
+});
+
+/* ---------- Calcul de l’estimation ---------- */
+function estimate(inp){
+  const out={rachat:null,collection:null,metal:null,fin:null,notes:[],conf:0,label:"",kind:""};
+  const g=inp.grade, coffret=inp.coffret;
+  let identified=0;
+  if(inp.cat==="euro2"){
+    const r=E2.find(x=>x.id===inp.model); if(!r) return null;
+    out.label="2 € "+r.label; out.kind="collection"; identified=r.id==="e2-autre"?.6:1;
+    let c;
+    if(coffret) c=r.neuf;
+    else if(g<=1) c=[Math.max(2,r.circ[0]*.5),r.circ[0]];
+    else if(g<=3) c=r.circ;
+    else c=[r.circ[1],Math.max(r.circ[1],r.neuf[0])];
+    out.collection=c.slice();
+    out.rachat=[Math.max(2,c[0]*.4),Math.max(2,c[1]*.6)];
+    if(r.tirage) out.notes.push(["o",`Tirage officiel : ${r.tirage.toLocaleString("fr-FR")} exemplaires.`]);
+    if(r.id==="e2-autre") out.notes.push(["","La plupart des 2 € commémoratives sont frappées à plusieurs millions d’exemplaires : elles valent 2 € en circulation, un peu plus en coffret."]);
+    if(r.circ[1]>=500) out.notes.push(["w","Pièce très contrefaite : faites-la authentifier par un professionnel avant toute vente."]);
+    if(r.circ[1]>=500 && !coffret) out.notes.push(["","Sans son coffret d’origine, cette pièce perd une grande partie de sa valeur."]);
+  }
+  else if(inp.cat==="euro"){
+    out.label="Euro de circulation"; out.kind="faciale"; identified=.8;
+    out.collection=null; out.rachat=null;
+    out.notes.push(["","Une pièce en euro courante vaut sa valeur faciale. Les « pièces rares » vues en ligne à des milliers d’euros sont presque toujours des annonces sans acheteur."]);
+    out.notes.push(["","Exceptions : les pièces de Monaco, du Vatican, de Saint-Marin et d’Andorre en coffret, et les vraies erreurs de frappe, qui doivent être vérifiées par un expert."]);
+  }
+  else if(inp.cat==="franc"){
+    out.label="Franc / centime ordinaire"; out.kind="collection"; identified=.6;
+    out.collection = g>=4 ? [1,15] : g>=2 ? [.2,3] : [.05,.5];
+    out.rachat = [0.01, Math.max(.05,out.collection[1]*.3)];
+    out.notes.push(["","Ces pièces (nickel, cupro-nickel, bronze, aluminium) se vendent souvent au lot. Certaines années à faible tirage valent nettement plus : vérifiez le millésime dans un catalogue spécialisé comme « Le Franc »."]);
+  }
+  else {
+    let poids, titre, metal, lab;
+    if(inp.cat==="libre"||inp.cat==="inconnu"&&!inp.model){
+      if(!(inp.poids>0)) return {error:"Indiquez le poids de la pièce pour estimer sa valeur en métal."};
+      poids=inp.poids; titre=inp.libreTitre; metal=inp.libreMetal; lab=`Pièce en ${metal} (${(titre*1000).toLocaleString("fr-FR")} ‰)`; identified=.4;
+      out.notes.push(["w","Métal et titre non vérifiés : un faux ou une pièce plaquée ne vaut presque rien. Un test à l’aimant (l’or et l’argent n’y réagissent pas) est un premier filtre."]);
+    } else {
+      const m=MODELS.find(x=>x.id===inp.model); if(!m) return null;
+      poids=m.poids; titre=m.titre; metal=m.metal; lab=m.label; identified=1;
+      if(inp.poids>0){
+        const dev=(inp.poids-m.poids)/m.poids;
+        if(Math.abs(dev)<=.02) {out.notes.push(["o",`Poids conforme : ${inp.poids.toLocaleString("fr-FR")} g pour ${m.poids.toLocaleString("fr-FR")} g attendus.`]); identified=1.2;}
+        else if(dev<-.02&&dev>-.06) out.notes.push(["w",`Poids un peu faible (${inp.poids.toLocaleString("fr-FR")} g au lieu de ${m.poids.toLocaleString("fr-FR")} g) : usure normale ou balance imprécise.`]);
+        else {out.notes.push(["b",`Poids anormal : ${inp.poids.toLocaleString("fr-FR")} g au lieu de ${m.poids.toLocaleString("fr-FR")} g. Risque de copie : faites vérifier la pièce avant de la vendre.`]); identified=.3;}
+      }
+      if(inp.diam>0 && Math.abs(inp.diam-m.diam)/m.diam>.04) out.notes.push(["w",`Diamètre inhabituel (${m.diam} mm attendus). Vérifiez la mesure.`]);
+      if(m.rare&&inp.annee&&m.rare[inp.annee]) out.notes.push(["o",`Année ${inp.annee} : ${m.rare[inp.annee]}. La valeur de collection peut dépasser nettement la fourchette ci-dessous.`]);
+      const tint=(state.analysis.avers||state.analysis.revers||{}).tint;
+      if(tint==="argentée / grise"&&metal==="or") out.notes.push(["w","La photo paraît plutôt grise pour une pièce en or. Vérifiez l’éclairage, ou la pièce."]);
+      if(tint==="dorée / cuivrée"&&metal==="argent") out.notes.push(["","La photo paraît dorée : lumière chaude, ou patine de l’argent. Rien d’inquiétant en soi."]);
+    }
+    const cours=COURS[metal], fin=poids*titre, mv=fin*cours;
+    out.label=lab; out.kind="metal"; out.metal=mv; out.fin=fin;
+    const rf = metal==="or" ? [.93,.98] : [.8,.92];
+    const gf = metal==="or"
+      ? [[1,1.03],[1,1.05],[1.02,1.08],[1.03,1.12],[1.05,1.2],[1.08,1.3]][g]
+      : [[.95,1.05],[1,1.1],[1,1.2],[1.05,1.3],[1.1,1.5],[1.2,1.8]][g];
+    out.rachat=[mv*rf[0],mv*rf[1]];
+    out.collection=[mv*gf[0],mv*gf[1]*(coffret?1.1:1)];
+    out.notes.unshift(["",`${fin.toLocaleString("fr-FR",{maximumFractionDigits:2})} g de ${metal} fin × ${cours.toLocaleString("fr-FR")} €/g (cours du ${CONFIG.cours.date}) = ${eur(mv)} de métal.`]);
+    if(metal==="argent") out.notes.push(["","Les comptoirs rachètent souvent l’argent « au poids », par lots : regroupez vos pièces pour obtenir un meilleur prix."]);
+  }
+  if(inp.nettoyee){ if(out.collection) out.collection=[out.collection[0]*.6,out.collection[1]*.7]; out.notes.push(["b","Pièce nettoyée : les collectionneurs la paient beaucoup moins cher. Ne la nettoyez plus."]); }
+  if(!inp.annee && inp.cat!=="euro") out.notes.push(["","Ajoutez l’année : certaines dates valent bien plus que d’autres."]);
+  const ps=photoScore().score;
+  let conf = 25 + 30*Math.min(identified,1.2)/1.2 + 30*ps + (inp.annee?7:0) + (inp.poids>0?8:0);
+  if(!Object.keys(state.analysis).length) out.notes.push(["w","Sans photo, impossible de vérifier l’état : l’indice de fiabilité reste bas."]);
+  out.conf=Math.max(5,Math.min(95,Math.round(conf)));
+  return out;
+}
+
+/* ---------- Affichage du résultat ---------- */
+function renderResult(r, meta){
+  const box=$("#result");
+  const confLab = r.conf>=70?"Bonne":r.conf>=45?"Moyenne":"Faible";
+  const thumbSrc = meta.thumb;
+  const coinSvg = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 72"><circle cx="36" cy="36" r="34" fill="#d6dde6"/><circle cx="36" cy="36" r="28" fill="none" stroke="#8d99a8" stroke-width="3" stroke-dasharray="0 5" stroke-linecap="round"/><text x="36" y="43" text-anchor="middle" font-family="Georgia" font-size="20" fill="#56606e">10F</text></svg>')}`;
+  let figs;
+  if(r.kind==="faciale"){
+    figs=`<div class="fig main"><span class="k">Valeur estimée</span><span class="v">Valeur faciale</span><span class="s">Ce que la pièce vaut en caisse</span></div>`;
+  } else {
+    figs=`<div class="fig main"><span class="k">Valeur de collection</span><span class="v">${range(r.collection)}</span><span class="s">Prix de vente probable entre collectionneurs</span></div>
+      <div class="fig"><span class="k">Prix de rachat</span><span class="v">${range(r.rachat)}</span><span class="s">Offre probable d’un comptoir</span></div>
+      <div class="fig"><span class="k">${r.metal!=null?"Valeur du métal":"Référence"}</span><span class="v">${r.metal!=null?eur(r.metal):"cote 2026"}</span><span class="s">${r.metal!=null?r.fin.toLocaleString("fr-FR",{maximumFractionDigits:2})+" g de métal fin":"ventes constatées"}</span></div>`;
+  }
+  box.innerHTML = `
+    <div class="res-head">
+      <img class="res-thumb" src="${thumbSrc||coinSvg}" alt="">
+      <div style="display:grid;gap:4px;min-width:0">
+        ${meta.example?'<span><span class="badge-ex">EXEMPLE</span></span>':'<span class="legend">Votre estimation</span>'}
+        <span class="res-title"></span>
+        <span class="muted small">${r.label}${meta.annee?" · "+meta.annee:""} · état ${GRADES[meta.grade].k}${meta.coffret?" · en coffret":""}</span>
+      </div>
+    </div>
+    <div class="figures">${figs}</div>
+    <div class="meter">
+      <div class="meter-row"><b>Indice de fiabilité</b><span>${confLab} · ${r.conf}/100</span></div>
+      <div class="meter-bar"><i style="width:${r.conf}%"></i></div>
+      <span class="hint">Monte avec des photos nettes des deux faces, l’année et le poids mesuré.</span>
+    </div>
+    <ul class="notes">${r.notes.map(n=>`<li class="${n[0]}">${n[1]}</li>`).join("")}</ul>
+    <div class="res-actions">
+      ${meta.example?'<a class="btn btn-primary btn-small" href="#estimer" id="try">Estimer ma propre pièce</a>':`<button type="button" class="btn btn-primary btn-small" id="save">Enregistrer dans mon carnet</button><button type="button" class="btn btn-ghost btn-small" id="print">Imprimer / PDF</button>`}
+    </div>
+    <p class="disclaimer">Estimation indicative calculée le ${new Date().toLocaleDateString("fr-FR")}, sans valeur d’expertise. Seul un professionnel qui examine la pièce peut en garantir l’authenticité et l’état.</p>`;
+  box.querySelector(".res-title").textContent = meta.title;
+  const s=box.querySelector("#save"); if(s) s.addEventListener("click",saveToCarnet);
+  const p=box.querySelector("#print"); if(p) p.addEventListener("click",()=>window.print());
+  const t=box.querySelector("#try"); if(t) t.addEventListener("click",e=>{e.preventDefault();$("#file-avers").focus();$("#estimer").scrollIntoView({behavior:"smooth"})});
+}
+
+function readForm(){
+  return {
+    cat:state.cat, model:state.model||$("#modele").value||null, grade:state.grade,
+    annee:parseInt($("#annee").value,10)||null, poids:parseFloat(String($("#poids").value).replace(",","."))||null,
+    diam:parseFloat($("#diametre").value)||null, coffret:$("#coffret").checked, nettoyee:$("#nettoyee").checked,
+    libreMetal:$("#libre-metal").value, libreTitre:parseFloat($("#libre-titre").value),
+    title:$("#titre").value.trim()
+  };
+}
+function run(scroll){
+  const inp=readForm(), err=$("#form-error"); err.hidden=true;
+  if(!inp.title){ inp.title = "Ma pièce du " + new Date().toLocaleDateString("fr-FR"); }
+  const needsModel = ["euro2","argent","or"].includes(inp.cat);
+  if(needsModel && !inp.model){ err.textContent="Choisissez le modèle dans la liste, ou sélectionnez « Je ne sais pas »."; err.hidden=false; $("#modele").focus(); return; }
+  if(inp.cat==="inconnu" && !inp.model && !(inp.poids>0)){ err.textContent="Indiquez au moins le poids, ou choisissez une des pièces proposées."; err.hidden=false; $("#poids").focus(); return; }
+  const r=estimate(inp);
+  if(!r){ err.textContent="Choisissez un modèle pour lancer l’estimation."; err.hidden=false; return; }
+  if(r.error){ err.textContent=r.error; err.hidden=false; $("#poids").focus(); return; }
+  const meta={title:inp.title,annee:inp.annee,grade:inp.grade,coffret:inp.coffret,thumb:(state.photos.avers||state.photos.revers||{}).big,example:false};
+  state.example=false; state.last={r,meta,small:(state.photos.avers||state.photos.revers||{}).small};
+  renderResult(r,meta);
+  if(scroll && window.matchMedia("(max-width:920px)").matches) $("#result").scrollIntoView({behavior:"smooth",block:"start"});
+}
+$("#form").addEventListener("submit",e=>{e.preventDefault();run(true)});
+$("#reset").addEventListener("click",()=>{
+  $("#form").reset(); state.photos={}; state.analysis={}; state.model=null;
+  ["avers","revers","tranche"].forEach(renderSlot); renderQC(); setCat("argent"); setGrade(2); $("#form-error").hidden=true; showExample();
+});
+
+/* ---------- Exemple affiché au chargement ---------- */
+function showExample(){
+  state.example=true;
+  const r=estimate({cat:"argent",model:"ag-10f-hercule",grade:2,annee:1967,poids:24.9,diam:37,coffret:false,nettoyee:false});
+  renderResult(r,{title:"Les 10 F du buffet de grand-père",annee:1967,grade:2,coffret:false,example:true});
+}
+
+/* ---------- Carnet (stockage local, sur l’appareil uniquement) ---------- */
+const KEY="avers.carnet.v1";
+function carnetGet(){ try{ return JSON.parse(localStorage.getItem(KEY)||"[]"); }catch(e){ return memCarnet; } }
+let memCarnet=[];
+function carnetSet(list){ memCarnet=list; try{ localStorage.setItem(KEY,JSON.stringify(list)); }catch(e){} }
+function saveToCarnet(){
+  if(!state.last) return;
+  const {r,meta,small}=state.last;
+  const list=carnetGet();
+  list.unshift({id:Date.now(),title:meta.title,label:r.label,annee:meta.annee,grade:GRADES[meta.grade].k,collection:r.collection,rachat:r.rachat,kind:r.kind,thumb:small||null,date:new Date().toLocaleDateString("fr-FR")});
+  carnetSet(list.slice(0,60)); renderCarnet(); toast("Enregistré dans votre carnet");
+}
+function renderCarnet(){
+  const list=carnetGet(), el=$("#carnet-list");
+  if(!list.length){ el.innerHTML=`<div class="empty" style="grid-column:1/-1">Votre carnet est vide. Estimez une pièce puis cliquez sur « Enregistrer dans mon carnet ».</div>`; $("#carnet-total").textContent=""; $("#carnet-clear").hidden=true; return; }
+  $("#carnet-clear").hidden=false;
+  el.innerHTML=list.map(it=>`<div class="carnet-item"><img src="${it.thumb||""}" alt=""><div style="display:grid;gap:2px;min-width:0"><span class="t"></span><span class="v">${it.kind==="faciale"?"Valeur faciale":range(it.collection)}</span><span class="d">${it.grade}${it.annee?" · "+it.annee:""} · ${it.date}</span></div><button type="button" class="btn btn-ghost btn-small" data-del="${it.id}" aria-label="Supprimer">Suppr.</button></div>`).join("");
+  el.querySelectorAll(".carnet-item .t").forEach((n,i)=>n.textContent=list[i].title);
+  el.querySelectorAll("[data-del]").forEach(b=>b.addEventListener("click",()=>{carnetSet(carnetGet().filter(x=>String(x.id)!==b.dataset.del));renderCarnet();}));
+  const tot=list.reduce((a,it)=>it.collection?[a[0]+it.collection[0],a[1]+it.collection[1]]:a,[0,0]);
+  $("#carnet-total").textContent=`${list.length} pièce${list.length>1?"s":""} · valeur de collection totale : ${range(tot)}`;
+}
+$("#carnet-clear").addEventListener("click",()=>{carnetSet([]);try{localStorage.removeItem(KEY)}catch(e){};renderCarnet();toast("Carnet effacé de cet appareil");});
+
+/* ---------- Cours modifiables ---------- */
+function renderRates(){
+  $("#cours-or").value=COURS.or; $("#cours-ag").value=COURS.argent;
+  $("#rates-label").textContent=`Cours utilisés : or ${COURS.or.toLocaleString("fr-FR")} €/g · argent ${COURS.argent.toLocaleString("fr-FR")} €/g (relevé du ${CONFIG.cours.date})`;
+}
+["#cours-or","#cours-ag"].forEach(s=>$(s).addEventListener("change",()=>{
+  const o=parseFloat($("#cours-or").value), a=parseFloat($("#cours-ag").value);
+  if(o>0) COURS.or=o; if(a>0) COURS.argent=a; renderRates();
+  if(state.example) showExample(); else run(false);
+  toast("Cours mis à jour");
+}));
+
+/* ---------- Divers : toast, dialogues, partage, avis ---------- */
+let tt; function toast(m){const t=$("#toast");t.textContent=m;t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,2600);}
+document.querySelectorAll("[data-open]").forEach(b=>b.addEventListener("click",()=>{const d=document.getElementById(b.dataset.open); if(d.showModal) d.showModal(); else d.setAttribute("open","");}));
+document.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",()=>b.closest("dialog").close()));
+document.querySelectorAll("dialog").forEach(d=>d.addEventListener("click",e=>{if(e.target===d)d.close()}));
+$("#share").addEventListener("click",async()=>{
+  const url=location.href.split("#")[0];
+  try{ if(navigator.share){ await navigator.share({title:"Avers",text:"Estimez vos pièces gratuitement, vos photos restent sur votre appareil :",url}); return; } }catch(e){ return; }
+  try{ await navigator.clipboard.writeText(url); toast("Lien copié"); }catch(e){ toast(url); }
+});
+$("#m-editeur").innerHTML = CONFIG.editeur ? "" : todo("À compléter : nom ou raison sociale, et moyen de contact");
+if(CONFIG.editeur) $("#m-editeur").textContent = CONFIG.editeur + (CONFIG.contact?" — "+CONFIG.contact:"");
+$("#m-resp").innerHTML = CONFIG.editeur ? "" : todo("nom de l’éditeur");
+if(CONFIG.editeur) $("#m-resp").textContent = CONFIG.editeur;
+$("#m-contact").innerHTML = CONFIG.contact ? "" : todo("adresse de contact");
+if(CONFIG.contact) $("#m-contact").textContent = CONFIG.contact;
+if(CONFIG.avisUrl){ $("#avis-btn").href=CONFIG.avisUrl; }
+else { $("#avis-btn").addEventListener("click",e=>{e.preventDefault();toast("Le questionnaire arrive très bientôt.");}); }
+
+/* ---------- Démarrage ---------- */
+setCat("argent"); setGrade(2); renderRates(); renderCarnet(); showExample();
+</script>
+</body>
+</html>
