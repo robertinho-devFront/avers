@@ -489,7 +489,7 @@ dialog::backdrop{background:rgba(10,16,26,.55)}
         </ul>
       </div>
       <div style="display:grid;gap:10px;justify-items:start">
-        <a class="btn" id="avis-btn" href="https://docs.google.com/forms/d/1D3eHoQJPsRmsfI5qOxGdXdPmDKvVbrMmDKxaaeKVEN0/viewform" target="_blank" rel="noopener noreferrer">Donner mon avis</a>
+        <a class="btn" id="avis-btn" href="#" target="_blank" rel="noopener noreferrer">Donner mon avis</a>
         <p class="small" id="avis-note">Le questionnaire est hébergé par Google Forms, qui applique ses propres règles de confidentialité.</p>
       </div>
     </div>
@@ -560,12 +560,12 @@ dialog::backdrop{background:rgba(10,16,26,.55)}
 <div class="toast" id="toast" role="status" hidden></div>
 
 <script>
-/* ============ CONFIGURATION — à compléter ou a changer  en ligne ============ */
+/* ============ CONFIGURATION — à compléter avant la mise en ligne ============ */
 const CONFIG = {
-  editeur: "Robert Da Silva, particulier et developpeur Web",
-  contact: "rdasilva75@gmail.com",
-  avisUrl: "https://docs.google.com/forms/d/1D3eHoQJPsRmsfI5qOxGdXdPmDKvVbrMmDKxaaeKVEN0/viewform",
-  cours: { or: 121.87, argent: 1.848, date: "23/09/2026" }
+  editeur: "Robert Da Silva, particulier et développeur web",   // mentions légales (obligatoire, LCEN)
+  contact: "rdasilva75@gmail.com",   // adresse pour exercer vos droits RGPD
+  avisUrl: "https://docs.google.com/forms/d/1D3eHoQJPsRmsfI5qOxGdXdPmDKvVbrMmDKxaaeKVEN0/viewform",  // lien du Google Form (voir google-form/creer-formulaire.gs)
+  cours: { or: 121.87, argent: 1.848, date: "23/09/2026" } // €/gramme de métal fin
 };
 /* =========================================================================== */
 
@@ -833,6 +833,11 @@ function estimate(inp){
     if(metal==="argent") out.notes.push(["","Les comptoirs rachètent souvent l’argent « au poids », par lots : regroupez vos pièces pour obtenir un meilleur prix."]);
   }
   if(inp.nettoyee){ if(out.collection) out.collection=[out.collection[0]*.6,out.collection[1]*.7]; out.notes.push(["b","Pièce nettoyée : les collectionneurs la paient beaucoup moins cher. Ne la nettoyez plus."]); }
+  // Une pièce en or ou en argent ne vaut jamais moins que son métal, même nettoyée ou abîmée.
+  if(out.metal&&out.collection&&out.collection[0]<out.metal*.95){
+    out.collection=[Math.max(out.collection[0],out.metal*.95),Math.max(out.collection[1],out.metal)];
+    out.notes.push(["o","Quoi qu’il arrive, elle garde la valeur de son métal : ne la vendez pas en dessous."]);
+  }
   if(!inp.annee && inp.cat!=="euro") out.notes.push(["","Ajoutez l’année : certaines dates valent bien plus que d’autres."]);
   const ps=photoScore().score;
   let conf = 25 + 30*Math.min(identified,1.2)/1.2 + 30*ps + (inp.annee?7:0) + (inp.poids>0?8:0);
